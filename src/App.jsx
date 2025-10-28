@@ -142,7 +142,8 @@ export default function App() {
         )}
       </AnimatePresence>
     </div>
-  );
+  
+);
 }
 
 function PageWrapper({ children }) {
