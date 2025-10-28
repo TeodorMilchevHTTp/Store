@@ -1,20 +1,25 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
-import { FaShoppingCart } from "react-icons/fa";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Dashboard from "./frontend/Dashboard";
 import Store from "./frontend/Store";
 import About from "./frontend/About";
 import Checkout from "./frontend/Checkout";
+import NavComponent from "./frontend/components/NavComponent";
 
 export default function App() {
+
+  // State management
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Toggle cart panel
   const toggleCart = () => setCartOpen(!cartOpen);
 
+
+  //Add to cart function
   const addToCart = (product) => {
     setCartItems((prev) => {
       const exists = prev.find((item) => item.id === product.id);
@@ -27,6 +32,7 @@ export default function App() {
     });
   };
 
+  // Remove from cart function
   const removeFromCart = (productId) => {
     setCartItems((prev) => prev.filter((item) => item.id !== productId));
   };
@@ -34,6 +40,7 @@ export default function App() {
   // Calculate subtotal
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Main return
   return (
     <div className="relative flex flex-col text-gray-900 min-h-screen">
       {/* Background */}
@@ -43,27 +50,7 @@ export default function App() {
       />
 
       {/* Navbar */}
-      <nav className="flex justify-between items-center px-8 py-4 bg-white/70 backdrop-blur-md shadow-md relative">
-        <h1 className="text-2xl font-bold text-orange-600 font-custom">Typo.exe</h1>
-
-        <div className="flex items-center space-x-6 mr-20">
-          <Link to="/" className="hover:text-orange-600 font-medium">Home</Link>
-          <Link to="/store" className="hover:text-orange-600 font-medium">Store</Link>
-          <Link to="/about" className="hover:text-orange-600 font-medium">About</Link>
-        </div>
-
-        <div className="absolute right-8 top-1/2 transform -translate-y-1/2">
-          <button
-            className="relative p-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition"
-            onClick={toggleCart}
-          >
-            <FaShoppingCart className="w-5 h-5" />
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {cartItems.length}
-            </span>
-          </button>
-        </div>
-      </nav>
+      <NavComponent cartItems={cartItems} toggleCart={toggleCart} />
 
       {/* Page Content */}
       <div className="flex-1 pt-20">
