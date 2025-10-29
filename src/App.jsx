@@ -1,14 +1,22 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+
 import Dashboard from "./frontend/Dashboard";
 import Store from "./frontend/Store";
 import About from "./frontend/About";
 import Checkout from "./frontend/Checkout";
 import NavComponent from "./frontend/components/NavComponent";
+import Login from "./frontend/Login";
+import AdminDashboard from "./frontend/AdminDashboard";
 
 export default function App() {
-
   // State management
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -18,14 +26,15 @@ export default function App() {
   // Toggle cart panel
   const toggleCart = () => setCartOpen(!cartOpen);
 
-
-  //Add to cart function
+  // Add to cart function
   const addToCart = (product) => {
     setCartItems((prev) => {
       const exists = prev.find((item) => item.id === product.id);
       if (exists) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -38,7 +47,13 @@ export default function App() {
   };
 
   // Calculate subtotal
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  // Get user role from localStorage
+  const role = localStorage.getItem("userRole");
 
   // Main return
   return (
@@ -55,12 +70,47 @@ export default function App() {
       {/* Page Content */}
       <div className="flex-1 pt-20">
         <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageWrapper><Dashboard /></PageWrapper>} />
-          <Route path="/store" element={<PageWrapper><Store addToCart={addToCart} /></PageWrapper>} />
-          <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
-          <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
-        </Routes>
+          <Routes location={location} key={location.pathname}>
+            <Route
+              path="/"
+              element={
+                <PageWrapper>
+                  <Dashboard />
+                </PageWrapper>
+              }
+            />
+            <Route
+              path="/store"
+              element={
+                <PageWrapper>
+                  <Store addToCart={addToCart} />
+                </PageWrapper>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <PageWrapper>
+                  <About />
+                </PageWrapper>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={<Checkout cartItems={cartItems} />}
+            />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/admin"
+              element={
+                role === "admin" ? (
+                  <AdminDashboard />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+          </Routes>
         </AnimatePresence>
       </div>
 
@@ -84,7 +134,9 @@ export default function App() {
               className="fixed top-0 right-0 w-96 h-full bg-white shadow-2xl p-6 z-50 rounded-l-3xl overflow-y-auto"
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-orange-600">Your Cart</h2>
+                <h2 className="text-2xl font-bold text-orange-600">
+                  Your Cart
+                </h2>
                 <button
                   onClick={toggleCart}
                   className="text-gray-500 hover:text-gray-800 text-xl font-bold"
@@ -103,11 +155,21 @@ export default function App() {
                         key={item.id}
                         className="flex items-center p-4 bg-gray-100 rounded-lg shadow"
                       >
-                        <img src={item.img} alt={item.name} className="w-16 h-16 rounded mr-4" />
+                        <img
+                          src={item.img}
+                          alt={item.name}
+                          className="w-16 h-16 rounded mr-4"
+                        />
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                          <p className="text-orange-600 font-bold">${item.price}</p>
-                          <p className="text-gray-500 text-sm">Qty: {item.quantity}</p>
+                          <h3 className="font-semibold text-gray-800">
+                            {item.name}
+                          </h3>
+                          <p className="text-orange-600 font-bold">
+                            ${item.price}
+                          </p>
+                          <p className="text-gray-500 text-sm">
+                            Qty: {item.quantity}
+                          </p>
                         </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
@@ -142,10 +204,10 @@ export default function App() {
         )}
       </AnimatePresence>
     </div>
-  
-);
+  );
 }
 
+// --- Animated Page Wrapper ---
 function PageWrapper({ children }) {
   return (
     <motion.div
