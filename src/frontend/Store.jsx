@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiSearch, FiGrid, FiLayout } from "react-icons/fi";
 import { BsStarFill, BsStarHalf, BsStar } from "react-icons/bs";
 
-export default function Store({ addToCart }) {
+
+export default function Store({ addToCart, darkMode }) {
   const products = [
     { id: 1, name: "Wireless Headphones", price: 99, img: "/images/headphones.jpg", rating: 4.5, tag: "Hot" },
     { id: 2, name: "Smart Watch", price: 199, img: "/images/smartwatch.jpg", rating: 4.7, tag: "New" },
@@ -73,7 +74,7 @@ export default function Store({ addToCart }) {
         Our Collection
       </motion.h2>
 
-      <p className="text-gray-700 max-w-xl mb-8">
+      <p className="=max-w-xl mb-8 transition-colors duration-500${ darkMode ? 'text-gray-300' : 'text-gray-600'">
         Discover high-quality tech gear — crafted for performance, durability, and design.
       </p>
 

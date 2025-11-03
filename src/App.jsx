@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Routes,
-  Route,
-  useNavigate,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
+import {Routes, Route, useNavigate, useLocation, Navigate} from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Dashboard from "./frontend/Dashboard";
@@ -20,8 +14,19 @@ export default function App() {
   // State management
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  //
+  const toggleTheme = () => {
+    setDarkMode((prev) => {
+      const newTheme = !prev;
+      localStorage.setItem("theme", newTheme ? "dark" : "light");
+      return newTheme;
+    });
+  };
 
   // Toggle cart panel
   const toggleCart = () => setCartOpen(!cartOpen);
@@ -60,12 +65,17 @@ export default function App() {
     <div className="relative flex flex-col text-gray-900 min-h-screen">
       {/* Background */}
       <div
-        className="fixed top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat -z-10"
+        className={`fixed top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat -z-10 transition-all duration-700 ${
+      darkMode ? "brightness-50 blur-sm" : "brightness-100"
+    }`}
         style={{ backgroundImage: "url('/images/background.jpg')" }}
       />
 
       {/* Navbar */}
-      <NavComponent cartItems={cartItems} toggleCart={toggleCart} />
+      <NavComponent cartItems={cartItems} 
+                    toggleCart={toggleCart} 
+                    darkMode={darkMode}
+                    toggleTheme = {toggleTheme}/>
 
       {/* Page Content */}
       <div className="flex-1 pt-20">
